@@ -13,13 +13,37 @@ BANNED = [
   'hintjens'      # Graffiti.
 ]
 
+LOCATIONS = [
+  'thailand'
+  ', TH'
+  'bangkok'
+  'bkk'
+  'chiang mai'
+  'koh samui'
+  'pattaya'
+  'phuket'
+]
+
 saveTopLogins = ->
   MIN_FOLLOWERS = 10
   MAX_PAGES = 10
-  urls = utils.range(1, MAX_PAGES + 1).map (page) -> [
-      "https://api.github.com/search/users?q=followers:%3E#{MIN_FOLLOWERS}+sort:followers+location%3Athailand+location%3A%22%2C+TH%22+location%3Abangkok+location%3A%22chiang%20mai%22+location%3Aphuket+location%3Apattaya+location%3A%22koh%20samui%22&per_page=100"
-      "&page=#{page}"
-    ].join('')
+
+  q = ["followers:>#{MIN_FOLLOWERS}"]
+  q = q.concat "location:\"#{loc}\"" for loc in LOCATIONS
+  q = q.join(' ')
+
+  getParams = (page) ->
+    q: q
+    sort: 'followers'
+    order: 'desc'
+    per_page: 100
+    page: page
+
+  urls = utils.range(1, MAX_PAGES + 1).map (page) ->
+    params = getParams(page)
+    components = []
+    components.push "#{k}=#{v}" for k, v of params
+    encodeURI "https://api.github.com/search/users?#{components.join('&')}"
 
   parse = (text) ->
     JSON.parse(text).items.map (_) -> _.login

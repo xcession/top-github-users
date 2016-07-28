@@ -25,3 +25,6 @@ Icon?
 # Project stuff
 /temp-logins.json
 /old-logins.json
+
+# Access token
+/access-token.json

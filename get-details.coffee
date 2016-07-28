@@ -41,8 +41,37 @@ sortStats = (stats) ->
 
 saveStats = ->
   logins = require './temp-logins.json'
+  token  = require './access-token.json'
+
+  endpoints = logins.map (login) -> "https://api.github.com/users/#{login}?access_token=#{token.key}"
+
+  parse = (text) ->
+    json = JSON.parse(text)
+
+    apiStat =
+      login: json.login
+      hireable: if json.hireable then "Yes" else "No"
+      public_repos: json.public_repos
+
+    apiStat
+
+  apiStats = null
+  utils.batchGet endpoints, parse, (all) ->
+    apiStats = all
+
   urls = logins.map (login) -> "https://github.com/#{login}"
   utils.batchGet urls, getStats, ->
-    utils.writeStats './raw/github-users-stats.json', sortStats stats
+    hash = {}
+    for stat in apiStats
+      hash[stat.login] = stat
+
+    mergeStats = (stats) ->
+      for login, stat of stats
+        apiStat = hash[login]
+        apiStat[k] = v for k, v of stat
+
+      sortStats hash
+
+    utils.writeStats './raw/github-users-stats.json', mergeStats stats
 
 saveStats()

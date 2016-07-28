@@ -5,11 +5,24 @@ var request = require('superagent');
 var batchGet = exports.batchGet = function(urls, progressback, callback) {
   var batch = new Batch;
   batch.concurrency(5);
+
+  var headers = {
+    'User-Agent': 'curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5'
+  };
+
+  try {
+    var token = require('./access-token.json');
+    headers['Authorization'] = 'token ' + token.key;
+  } catch (error) {
+    console.log('access-token.json not found or invalid');
+    console.log('using unauthenticated rate limit');
+  }
+
   urls.forEach(function(url) {
     batch.push(function(done) {
       request
         .get(url)
-        .set('User-Agent', 'curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5')
+        .set(headers)
         .end(function(error, response) {
           console.log(url);
           if (error) throw new Error(error);

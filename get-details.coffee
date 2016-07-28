@@ -41,9 +41,13 @@ sortStats = (stats) ->
 
 saveStats = ->
   logins = require './temp-logins.json'
-  token = require './access-token.json'
 
-  apiEndpoints = logins.map (login) -> "https://api.github.com/users/#{login}?access_token=#{token.key}"
+  try
+    token = require './access-token.json'
+    apiEndpoints = logins.map (login) -> "https://api.github.com/users/#{login}?access_token=#{token.key}"
+  catch error
+    apiEndpoints = logins.map (login) -> "https://api.github.com/users/#{login}"
+
   webUrls = logins.map (login) -> "https://github.com/#{login}"
 
   utils.batchGet apiEndpoints, getStats, (_all) ->

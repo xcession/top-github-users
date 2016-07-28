@@ -21,7 +21,7 @@ extractStats = (html) ->
     login: byProp('additionalName').text().trim()
     language: (/\sin ([\w-+#\s\(\)]+)/.exec(pageDesc)?[1] ? '')
     gravatar: byProp('image').attr('href')
-    organizations: $('#js-pjax-container > div > div > div.column.one-fourth.vcard > div.clearfix > a').toArray().map(getOrgName)
+    organizations: $('#js-pjax-container > div > div > div.column.one-fourth > div.clearfix > a').toArray().map(getOrgName)
     contributions: getInt $('#js-pjax-container > div > div > div.column.three-fourths > div.js-repo-filter.position-relative > div > div.boxed-group.flush > h3').text().trim().split(' ')[0]
 
   if stats[userStats.login]?

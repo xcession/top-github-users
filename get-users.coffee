@@ -22,22 +22,20 @@ saveTopLogins = ->
   MIN_FOLLOWERS = 5
   MAX_PAGES = 10
 
-  q = ["followers:>#{MIN_FOLLOWERS}"]
-  q = q.concat "location:\"#{loc}\"" for loc in LOCATIONS
-  q = q.join(' ')
+  criteria = ["followers:>#{MIN_FOLLOWERS}"]
+  criteria.push "location:\"#{loc}\"" for loc in LOCATIONS
 
   getParams = (page) ->
-    q: q
+    q: criteria.join(' ')
     sort: 'followers'
     order: 'desc'
     per_page: 100
     page: page
 
   urls = utils.range(1, MAX_PAGES + 1).map (page) ->
-    params = getParams(page)
-    components = []
-    components.push "#{k}=#{v}" for k, v of params
-    encodeURI "https://api.github.com/search/users?#{components.join('&')}"
+    params = []
+    params.push "#{k}=#{v}" for k, v of getParams(page)
+    encodeURI "https://api.github.com/search/users?#{params.join('&')}"
 
   parse = (text) ->
     JSON.parse(text).items.map (_) -> _.login

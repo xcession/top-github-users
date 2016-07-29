@@ -32,14 +32,14 @@ top = (stats, field, type) ->
 stats2markdown = (datafile, mdfile, title) ->
   stats = require(datafile)
   minFollowers = stats.map((_) -> _.followers).reduce(minimum, 1000)
-  maxNumber = 256
+  maxNumber = 1000
 
   today = new Date()
   from = new Date()
   from.setYear today.getFullYear() - 1
 
   out = """
-  # Most active GitHub users ([git.io/top](http://git.io/top))
+  # Most active GitHub users in Thailand
 
   The count of contributions (summary of Pull Requests, opened issues and commits) to public repos at GitHub.com from **#{from.toGMTString()}** till **#{today.toGMTString()}**.
 
@@ -53,15 +53,19 @@ stats2markdown = (datafile, mdfile, title) ->
     .slice(0, #{maxNumber})
   ```
 
-  Made with data mining of GitHub.com ([raw data](https://gist.github.com/4524946), [script](https://github.com/paulmillr/top-github-users)) by [@paulmillr](https://github.com/paulmillr) with contribs of [@lifesinger](https://github.com/lifesinger) and [@ahmetalpbalkan](https://github.com/ahmetalpbalkan). Updated once per week.
+  Made with data mining of GitHub.com ([raw data](https://gist.github.com/4524946), [script](https://github.com/paulmillr/top-github-users)) by [@paulmillr](https://github.com/paulmillr) with contribs of [@lifesinger](https://github.com/lifesinger) and [@ahmetalpbalkan](https://github.com/ahmetalpbalkan).
+  [Update](https://github.com/statguy/top-github-users) for Thailand with additional data by [@wulab](https://github.com/wulab) and [@statguy](https://github.com/statguy).
 
   <table cellspacing="0"><thead>
   <th scope="col">#</th>
   <th scope="col">User</th>
   <th scope="col">Contribs</th>
+  <th scope="col">Public repos</th>
+  <th scope="col">Public gists</th>
   <!-- Language currently disabled: GitHub returns 'Shell' for most users <th scope="col">Language</th> -->
   <th scope="col">Location</th>
   <th scope="col" width="30">Picture</th>
+  <th scope="col">Hireable</th>
   </thead><tbody>\n
   """
 
@@ -72,9 +76,12 @@ stats2markdown = (datafile, mdfile, title) ->
       <th scope="row">##{index + 1}</th>
       <td><a href="https://github.com/#{stat.login}">#{stat.login}</a>#{if stat.name then ' (' + stat.name + ')' else ''}</td>
       <td>#{stat.contributions}</td>
+      <td>#{stat.public_repos}</td>
+      <td>#{stat.public_gists}</td>
       <!-- <td>#{stat.language}</td> -->
       <td>#{stat.location}</td>
       <td><img width="30" height="30" src="#{stat.gravatar.replace('?s=400', '?s=30')}"></td>
+      <td>#{if stat.hireable then "Yes" else "No"}</td>
     </tr>
     """.replace(/\n/g, '')
 

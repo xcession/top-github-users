@@ -4,29 +4,30 @@ utils = require './utils'
 
 stats = {}
 
-getStats = (text) ->
-  userStats = JSON.parse(text)
-  stats[userStats.login] = userStats
-  userStats
-
-extractStats = (html) ->
+getStats = (html, url) ->
   $ = cheerio.load html
   byProp = (field) -> $("[itemprop='#{field}']")
   getInt = (text) -> parseInt text.replace ',', ''
   getOrgName = (item) -> $(item).attr('aria-label')
+  login = byProp('additionalName').text().trim()
+  getFollowers = ->
+    text = $("a[href=\"/#{login}?tab=followers\"] > .Counter").text().trim()
+    multiplier = if text.indexOf('k') > 0 then 1000 else 1
+    (parseFloat text) * multiplier
 
   pageDesc = $('meta[name="description"]').attr('content')
 
   userStats =
-    login: byProp('additionalName').text().trim()
+    name: byProp('name').text().trim()
+    login: login
+    location: byProp('homeLocation').text().trim()
     language: (/\sin ([\w-+#\s\(\)]+)/.exec(pageDesc)?[1] ? '')
     gravatar: byProp('image').attr('href')
-    organizations: $('#js-pjax-container > div > div > div.column.one-fourth > div.clearfix > a').toArray().map(getOrgName)
-    contributions: getInt $('#js-pjax-container > div > div > div.column.three-fourths > div.js-repo-filter.position-relative > div > div.boxed-group.flush > h3').text().trim().split(' ')[0]
-
-  if stats[userStats.login]?
-    stats[userStats.login][k] = v for k, v of userStats when k isnt 'login'
-
+    followers: getFollowers()
+    organizations: $('h2:contains("Organizations") ~ a').toArray().map(getOrgName)
+    contributions: getInt $('div.position-relative > h2.f4.text-normal.mb-2').text().trim().split(' ')[0]
+ 
+  stats[userStats.login] = userStats
   userStats
 
 sortStats = (stats) ->
@@ -41,11 +42,8 @@ sortStats = (stats) ->
 
 saveStats = ->
   logins = require './temp-logins.json'
-  apiEndpoints = logins.map (login) -> "https://api.github.com/users/#{login}"
-  webUrls = logins.map (login) -> "https://github.com/#{login}"
-
-  utils.batchGet apiEndpoints, getStats, (_all) ->
-    utils.batchGet webUrls, extractStats, (_all) ->
+  urls = logins.map (login) -> "https://github.com/#{login}"
+  utils.batchGet urls, getStats, ->
       utils.writeStats './raw/github-users-stats.json', sortStats stats
 
 saveStats()

@@ -8,14 +8,14 @@ BANNED = [
 ]
 
 LOCATIONS = [
-  'thailand'
-  ', TH'
-  'bangkok'
-  'bkk'
-  'chiang mai'
-  'koh samui'
-  'pattaya'
-  'phuket'
+  'laos'
+  ', VTE'
+  'vientiane'
+  'vte'
+  'lao'
+  'lao pdr'
+  'laotian'
+  'luang prabang'
 ]
 
 saveTopLogins = ->

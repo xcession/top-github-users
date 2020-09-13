@@ -54,14 +54,11 @@ stats2markdown = (datafile, mdfile, title) ->
   ```
 
   Made with data mining of GitHub.com ([raw data](https://gist.github.com/4524946), [script](https://github.com/paulmillr/top-github-users)) by [@paulmillr](https://github.com/paulmillr) with contribs of [@lifesinger](https://github.com/lifesinger) and [@ahmetalpbalkan](https://github.com/ahmetalpbalkan).
-  [Update](https://github.com/statguy/top-github-users) for Thailand with additional data by [@wulab](https://github.com/wulab) and [@statguy](https://github.com/statguy).
 
   <table cellspacing="0"><thead>
   <th scope="col">#</th>
   <th scope="col">User</th>
   <th scope="col">Contribs</th>
-  <th scope="col">Public repos</th>
-  <th scope="col">Public gists</th>
   <!-- Language currently disabled: GitHub returns 'Shell' for most users <th scope="col">Language</th> -->
   <th scope="col">Location</th>
   <th scope="col" width="30">Picture</th>
@@ -76,8 +73,6 @@ stats2markdown = (datafile, mdfile, title) ->
       <th scope="row">##{index + 1}</th>
       <td><a href="https://github.com/#{stat.login}">#{stat.login}</a>#{if stat.name then ' (' + stat.name + ')' else ''}</td>
       <td>#{stat.contributions}</td>
-      <td>#{stat.public_repos}</td>
-      <td>#{stat.public_gists}</td>
       <!-- <td>#{stat.language}</td> -->
       <td>#{stat.location}</td>
       <td><img width="30" height="30" src="#{stat.gravatar.replace('?s=400', '?s=30')}"></td>

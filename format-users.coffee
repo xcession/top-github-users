@@ -39,7 +39,7 @@ stats2markdown = (datafile, mdfile, title) ->
   from.setYear today.getFullYear() - 1
 
   out = """
-  # Most active GitHub users in Thailand
+  # Top 1000 active GitHub users
 
   The count of contributions (summary of Pull Requests, opened issues and commits) to public repos at GitHub.com from **#{from.toGMTString()}** till **#{today.toGMTString()}**.
 
